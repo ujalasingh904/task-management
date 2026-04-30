@@ -14,14 +14,14 @@ const app = express();
 connectDB();
 
 
-// app.use(cors({
-//   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-//   credentials: true
-// }));
-
 app.use(cors({
-  origin: '*'
+  origin: process.env.FRONTEND_URL ,
+  credentials: true
 }));
+
+// app.use(cors({
+//   origin: '*'
+// }));
 
 
 
