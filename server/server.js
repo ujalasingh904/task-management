@@ -8,14 +8,30 @@ import taskRoutes from './routes/taskRoutes.js';
 
 dotenv.config();
 
-const app = express();    
+const app = express();
 
- 
+
 connectDB();
 
- 
+
+// app.use(cors({
+//   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+//   credentials: true
+// }));
+
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5173'
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
@@ -30,12 +46,12 @@ app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 
- 
+
 app.get('/api/health', (req, res) => {
   res.status(200).json({ success: true, message: 'Server is running' });
 });
 
- 
+
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -43,7 +59,7 @@ app.use((req, res) => {
   });
 });
 
- 
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
